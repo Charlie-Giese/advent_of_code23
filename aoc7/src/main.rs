@@ -2,10 +2,12 @@ use helper::read_lines;
 
 const PATH : &str = "./src/input.txt";
 
+#[derive(Clone)]
 struct Round {
     hand   : String,
     bid    : i32,
     score  : i32,
+    rank   : i32,
 }
 
 fn main() {
@@ -24,6 +26,7 @@ fn main() {
                 hand    : String::from(parts[0]),
                 bid     : parts[1].parse::<i32>().unwrap(),
                 score   : 0,
+                rank    : 0,
             };
             
             round.score =  round.generate_score();
@@ -31,11 +34,24 @@ fn main() {
             
         }
     }
+    for r in rounds.iter() {
+        println!("{:?}", r.hand);
+    }
 
     rounds.sort_by(|a, b| a.score.cmp(&b.score));
-    for x in rounds.iter() {
-        println!("{:?}", x.score);
+    for s in rounds[0].score .. rounds[rounds.len()-1].score + 1 {
+        let indices = rounds.iter().enumerate().filter(|(_, &ref r)| r.score == s).map(|(index, _)| index).collect::<Vec<_>>();
+        let mut equal_vals = vec![];
+        for idx in indices.iter() {
+            equal_vals.push(rounds[*idx].score);
+        }
+
+        println!("{:?} {:?}", indices, equal_vals);
     }
+    
+    
+    
+
 
 
 }
@@ -52,10 +68,6 @@ impl Round {
         for c in s.chars() {
             classification.push((c, s.matches(c).count()));
         }
-
-        //classification.sort_unstable();
-        //classification.dedup();
-
         classification
        
     }
